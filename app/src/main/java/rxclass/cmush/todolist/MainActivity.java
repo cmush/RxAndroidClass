@@ -39,7 +39,38 @@ public class MainActivity extends AppCompatActivity {
         taskListObservable();
         just();
         range();
+        repeat();
+    }
 
+    private void repeat() {
+        // repeat() is another intuitively named operator.
+        // However, repeat must be used in conjunction with another operator.
+        // A good example is with the range() operator.
+        Observable.range(0,10)
+                .repeat(2)
+                .observeOn(Schedulers.io())
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<Integer>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onNext(Integer integer) {
+                        Log.d(TAG, "repeat onNext: " + integer);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
     }
 
     private void range() {
