@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.TextView;
 
+import java.util.List;
+
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
@@ -34,6 +36,55 @@ public class MainActivity extends AppCompatActivity {
 
         taskObservable();
         singleTaskObservable();
+        taskListObservable();
+    }
+
+    private void taskListObservable() {
+        final List<Task> tasks = DataSource.createTasksList();
+
+        Observable<Task> taskListObservable = Observable
+                .create(new ObservableOnSubscribe<Task>() {
+                    @Override
+                    public void subscribe(ObservableEmitter<Task> emitter) throws Exception {
+                        for (Task task : tasks) {
+                            // Inside the subscribe method iterate through
+                            // the list of tasks and call onNext(task)
+                            if (!emitter.isDisposed()) {
+                                emitter.onNext(task);
+                            }
+                        }
+
+                        // Once the loop is complete, call the onComplete() method
+                        if (!emitter.isDisposed()) {
+                            emitter.onComplete();
+                        }
+                    }
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+
+        // Subscribe to the Observable and get the emitted objects
+        taskListObservable.subscribe(new Observer<Task>() {
+            @Override
+            public void onSubscribe(Disposable d) {
+
+            }
+
+            @Override
+            public void onNext(Task task) {
+                Log.d(TAG, "taskListObservable onNext: task: " + task.getDescription());
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onComplete() {
+
+            }
+        });
     }
 
     private void singleTaskObservable() {
@@ -45,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
                 .create(new ObservableOnSubscribe<Task>() {
                     @Override
                     public void subscribe(ObservableEmitter<Task> emitter) throws Exception {
-                        if(!emitter.isDisposed()){ // process is unique to the create operator
+                        if (!emitter.isDisposed()) { // process is unique to the create operator
                             emitter.onNext(task);  // basically, it should happen if emitter is not
                             emitter.onComplete();  // disposed of yet.
                         }
@@ -61,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onNext(Task task) {
-                Log.d(TAG, "singleTaskObservable onNext: : " + task.getDescription());
+                Log.d(TAG, "singleTaskObservable onNext: task: " + task.getDescription());
             }
 
             @Override
@@ -98,13 +149,13 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onNext(Task task) { // run on main thread
-                Log.d(TAG, "taskObservable onNext: : " + Thread.currentThread().getName());
-                Log.d(TAG, "taskObservable onNext: : " + task.getDescription());
+                Log.d(TAG, "taskObservable onNext: task: " + Thread.currentThread().getName());
+                Log.d(TAG, "taskObservable onNext: task: " + task.getDescription());
             }
 
             @Override
             public void onError(Throwable e) {
-                Log.e(TAG, "taskObservable onError: : " + e);
+                Log.e(TAG, "taskObservable onError: task: " + e);
             }
 
             @Override
