@@ -30,6 +30,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        taskObservable();
+    }
+
+    private void taskObservable() {
         Observable<Task> taskObservable = Observable
                 .fromIterable(DataSource.createTasksList())
                 .subscribeOn(Schedulers.io())
