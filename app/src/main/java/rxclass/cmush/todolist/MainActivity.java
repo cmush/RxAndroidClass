@@ -9,10 +9,9 @@ import io.reactivex.disposables.CompositeDisposable;
 
 import static rxclass.cmush.todolist.demos.Introduction.*;
 import static rxclass.cmush.todolist.demos.CreateJustRangeRepeat.*;
+import static rxclass.cmush.todolist.demos.IntervalAndTimer.*;
 
 public class MainActivity extends AppCompatActivity {
-    private static final String TAG = "MainActivity";
-
     //ui
     private TextView text;
 
@@ -33,6 +32,11 @@ public class MainActivity extends AppCompatActivity {
         just();
         range();
         repeat();
+
+        // Interval and Timer
+        handlerRunnable();
+        intervalObservable();
+        timer();
     }
 
     @Override
