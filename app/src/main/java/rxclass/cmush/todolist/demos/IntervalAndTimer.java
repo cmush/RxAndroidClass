@@ -12,7 +12,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Predicate;
 import io.reactivex.schedulers.Schedulers;
-import rxclass.cmush.todolist.models.Task;
 
 public class IntervalAndTimer {
     private static final String TAG = "IntervalAndTimer";

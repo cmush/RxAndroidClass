@@ -13,6 +13,7 @@ import static rxclass.cmush.todolist.demos.CreateJustRangeRepeat.*;
 import static rxclass.cmush.todolist.demos.IntervalAndTimer.*;
 import static rxclass.cmush.todolist.demos.From_ArrayIterableCallable.*;
 import static rxclass.cmush.todolist.demos.CreateOperators.*;
+import static rxclass.cmush.todolist.demos.TransformationOperators.*;
 
 public class MainActivity extends AppCompatActivity {
     //ui
@@ -56,6 +57,9 @@ public class MainActivity extends AppCompatActivity {
         distinctFilter();
         takeFilter();
         takeWhileFilter();
+
+        // Transformation Operators
+        mapExtractFieldString();
     }
 
     @Override
