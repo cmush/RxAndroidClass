@@ -26,7 +26,7 @@ public class TransformationOperators {
                     @Override
                     public String apply(Task task) throws Exception {
                         Log.d(TAG,
-                                "apply: doing work on thread: "
+                                "mapExtractFieldString apply: doing work on thread: "
                                         + Thread.currentThread().getName()
                         );
                         return task.getDescription();
@@ -53,6 +53,48 @@ public class TransformationOperators {
             @Override
             public void onComplete() {
 
+            }
+        });
+    }
+
+    // not working as expected -> emits all objects rather
+    // than those whose isComplete state has changed
+    public static void mapExtractUpdatedTask() {
+        Observable<Task> completeTaskObservable = Observable
+                .fromIterable(DataSource.createTasksList())
+                .subscribeOn(Schedulers.io())
+                .map(new Function<Task, Task>() {
+                    @Override
+                    public Task apply(Task task) throws Exception {
+                        Log.d(TAG,
+                                "mapExtractUpdatedTask apply: doing work on thread: "
+                                + Thread.currentThread().getName()
+                        );
+                        task.setComplete(true);
+                        return task;
+                    }
+                })
+                .observeOn(AndroidSchedulers.mainThread());
+
+        completeTaskObservable.subscribe(new Observer<Task>() {
+            @Override
+            public void onSubscribe(Disposable d) {
+            }
+
+            @Override
+            public void onNext(Task task) {
+                Log.d(TAG, "mapExtractUpdatedTask onNext: is the task "
+                        + task.getDescription() + " complete? "
+                        + task.isComplete()
+                );
+            }
+
+            @Override
+            public void onError(Throwable e) {
+            }
+
+            @Override
+            public void onComplete() {
             }
         });
     }

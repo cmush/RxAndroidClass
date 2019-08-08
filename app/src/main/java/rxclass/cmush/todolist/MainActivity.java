@@ -60,6 +60,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Transformation Operators
         mapExtractFieldString();
+        mapExtractUpdatedTask();
     }
 
     @Override
