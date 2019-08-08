@@ -35,8 +35,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         taskObservable();
-        singleTaskObservable();
-        taskListObservable();
+        create_singleTaskObservable();
+        create_taskListObservable();
         just();
         range();
         repeat();
@@ -129,7 +129,7 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
-    private void taskListObservable() {
+    private void create_taskListObservable() {
         final List<Task> tasks = DataSource.createTasksList();
 
         Observable<Task> taskListObservable = Observable
@@ -162,7 +162,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onNext(Task task) {
-                Log.d(TAG, "taskListObservable onNext: task: " + task.getDescription());
+                Log.d(TAG, "create_taskListObservable onNext: task: " + task.getDescription());
             }
 
             @Override
@@ -177,7 +177,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void singleTaskObservable() {
+    private void create_singleTaskObservable() {
         // Instantiate the object to become an Observable
         final Task task = new Task("Walk the dog", false, 4);
 
@@ -202,7 +202,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onNext(Task task) {
-                Log.d(TAG, "singleTaskObservable onNext: task: " + task.getDescription());
+                Log.d(TAG, "create_singleTaskObservable onNext: task: " + task.getDescription());
             }
 
             @Override
