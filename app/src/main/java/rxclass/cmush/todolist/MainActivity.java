@@ -22,12 +22,12 @@ import rxclass.cmush.todolist.util.DataSource;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
-    private CompositeDisposable disposables = new CompositeDisposable();
 
     //ui
     private TextView text;
 
     //vars
+    private CompositeDisposable disposables = new CompositeDisposable();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +38,35 @@ public class MainActivity extends AppCompatActivity {
         singleTaskObservable();
         taskListObservable();
         just();
+        range();
+
+    }
+
+    private void range() {
+        Observable.range(0,20)
+                .observeOn(Schedulers.io())
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<Integer>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onNext(Integer integer) {
+                        Log.d(TAG, "range onNext: " + integer);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
     }
 
     // not a practical example but makes a great demo
