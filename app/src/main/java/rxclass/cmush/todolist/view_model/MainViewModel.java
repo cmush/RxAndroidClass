@@ -1,5 +1,6 @@
 package rxclass.cmush.todolist.view_model;
 
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
 import java.util.concurrent.Future;
@@ -17,5 +18,9 @@ public class MainViewModel extends ViewModel {
 
     public Future<Observable<ResponseBody>> makeFutureQuery(){
         return repository.makeFutureQuery();
+    }
+
+    public LiveData<ResponseBody> makeLiveDataQuery(){
+        return repository.makeLiveDataQuery();
     }
 }

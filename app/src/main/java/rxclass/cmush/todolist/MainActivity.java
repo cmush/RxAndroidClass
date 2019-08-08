@@ -47,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Create Operators - fromFuture
         fromFuture(this);
+        fromPublisher(this);
     }
 
     @Override

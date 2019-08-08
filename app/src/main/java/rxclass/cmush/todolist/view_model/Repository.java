@@ -1,5 +1,8 @@
 package rxclass.cmush.todolist.view_model;
 
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.LiveDataReactiveStreams;
+
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -9,6 +12,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import io.reactivex.Observable;
+import io.reactivex.schedulers.Schedulers;
 import okhttp3.ResponseBody;
 
 public class Repository {
@@ -21,6 +25,8 @@ public class Repository {
         return instance;
     }
 
+    // using an Executor to make a network call,
+    // returning a Future Observable to the ViewModel.
     public Future<Observable<ResponseBody>> makeFutureQuery(){
         final ExecutorService executor = Executors.newSingleThreadExecutor();
         final Callable<Observable<ResponseBody>> myNetworkCallable = new Callable<Observable<ResponseBody>>() {
@@ -64,5 +70,11 @@ public class Repository {
 
         return futureObservable;
 
+    }
+
+    public LiveData<ResponseBody> makeLiveDataQuery(){
+        return LiveDataReactiveStreams.fromPublisher(ServiceGenerator.getRequestApi()
+        .makeFlowableQuery()
+        .subscribeOn(Schedulers.io()));
     }
 }

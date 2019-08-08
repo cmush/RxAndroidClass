@@ -9,6 +9,7 @@ public class ServiceGenerator {
     private static Retrofit.Builder retrofitBuilder =
             new Retrofit.Builder()
                     .baseUrl(BASE_URL)
+                    // Without this, we can't convert Retrofit Call objects Flowables/Observables
                     .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                     .addConverterFactory(GsonConverterFactory.create());
 

@@ -19,12 +19,13 @@ public class CreateOperators {
     private static final String TAG = "CreateOperators";
 
     /*
-     * used to emit an arbitrary number of items that are known upfront.
+     * A future is essentially a pending task. It's a promise for a
+     * result from a task when it runs sometime in the future e.g an ExecutorService
      *
      * Future<T>
      * Ouput: Observable<T>
      */
-    public static void fromFuture(FragmentActivity context){
+    public static void fromFuture(FragmentActivity context) {
         MainViewModel viewModel = ViewModelProviders.of(context).get(MainViewModel.class);
         try {
             viewModel.makeFutureQuery().get()
@@ -33,14 +34,14 @@ public class CreateOperators {
                     .subscribe(new Observer<ResponseBody>() {
                         @Override
                         public void onSubscribe(Disposable d) {
-                            Log.d(TAG, "onSubscribe: called.");
+                            Log.d(TAG, "fromFuture onSubscribe: called.");
                         }
 
                         @Override
                         public void onNext(ResponseBody responseBody) {
-                            Log.d(TAG, "onNext: got the response from server!");
+                            Log.d(TAG, "fromFuture onNext: got the response from server!");
                             try {
-                                Log.d(TAG, "onNext: " + responseBody.string());
+                                Log.d(TAG, "fromFuture onNext: " + responseBody.string());
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
@@ -48,12 +49,12 @@ public class CreateOperators {
 
                         @Override
                         public void onError(Throwable e) {
-                            Log.e(TAG, "onError: ", e);
+                            Log.e(TAG, "fromFuture onError: ", e);
                         }
 
                         @Override
                         public void onComplete() {
-                            Log.d(TAG, "onComplete: called.");
+                            Log.d(TAG, "fromFuture onComplete: called.");
                         }
                     });
         } catch (ExecutionException e) {
@@ -61,5 +62,30 @@ public class CreateOperators {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    /*
+     * used to convert LiveData objects to reactive streams
+     * (rare & especially in cases when one might wanna apply an operator),
+     * or from reactive streams to LiveData objects.
+     * Input: LiveData<T>
+     * Ouput: Observable<T>
+     *     OR
+     * Input: Observable<T>
+     * Ouput: LiveData<T>
+     */
+    public static void fromPublisher(FragmentActivity context) {
+        MainViewModel viewModel = ViewModelProviders.of(context).get(MainViewModel.class);
+        viewModel.makeLiveDataQuery().observe(context, new androidx.lifecycle.Observer<ResponseBody>() {
+            @Override
+            public void onChanged(ResponseBody responseBody) {
+                Log.d(TAG, "fromPublisher onChanged: this is a live data response!");
+                try {
+                    Log.d(TAG, "fromPublisher onChanged: " + responseBody.string());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 }
