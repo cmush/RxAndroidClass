@@ -54,6 +54,8 @@ public class MainActivity extends AppCompatActivity {
         stringFilter();
         booleanFilter(); // implemented in Introduction.fromIterable_taskObservable
         distinctFilter();
+        takeFilter();
+        takeWhileFilter();
     }
 
     @Override

@@ -108,4 +108,63 @@ public class FilterOperators {
             }
         });
     }
+
+    public static void takeFilter(){
+        Observable<Task> taskObservable = Observable
+                .fromIterable(DataSource.createTasksList())
+                .take(3)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+
+        taskObservable.subscribe(new Observer<Task>() {
+            @Override
+            public void onSubscribe(Disposable d) {
+
+            }
+            @Override
+            public void onNext(Task task) {
+                Log.d(TAG, "takeFilter onNext: " + task.getDescription());
+            }
+            @Override
+            public void onError(Throwable e) {
+
+            }
+            @Override
+            public void onComplete() {
+
+            }
+        });
+    }
+
+    public static void takeWhileFilter(){
+        Observable<Task> taskObservable = Observable
+                .fromIterable(DataSource.createTasksList())
+                .takeWhile(new Predicate<Task>() {
+                    @Override
+                    public boolean test(Task task) throws Exception {
+                        return task.isComplete();
+                    }
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+
+        taskObservable.subscribe(new Observer<Task>() {
+            @Override
+            public void onSubscribe(Disposable d) {
+
+            }
+            @Override
+            public void onNext(Task task) {
+                Log.d(TAG, "takeWhileFilter onNext: " + task.getDescription());
+            }
+            @Override
+            public void onError(Throwable e) {
+
+            }
+            @Override
+            public void onComplete() {
+
+            }
+        });
+    }
 }
