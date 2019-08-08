@@ -10,6 +10,7 @@ import io.reactivex.disposables.CompositeDisposable;
 import static rxclass.cmush.todolist.demos.Introduction.*;
 import static rxclass.cmush.todolist.demos.CreateJustRangeRepeat.*;
 import static rxclass.cmush.todolist.demos.IntervalAndTimer.*;
+import static rxclass.cmush.todolist.demos.From_ArrayIterableCallable.*;
 
 public class MainActivity extends AppCompatActivity {
     //ui
@@ -37,6 +38,11 @@ public class MainActivity extends AppCompatActivity {
         handlerRunnable();
         intervalObservable();
         timer();
+
+        // fromArray, fromIterable, fromCallable - RxJava Operators
+        fromArray();
+        fromIterable();
+        fromCallable();
     }
 
     @Override

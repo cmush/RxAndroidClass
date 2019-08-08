@@ -15,4 +15,14 @@ public class DataSource {
         tasks.add(new Task("Make dinner", true, 5));
         return tasks;
     }
+
+    public static Task[] createTasksArray(){
+        Task[] tasksArray = new Task[5];
+        tasksArray[0] = (new Task("Take out the trash", true, 3));
+        tasksArray[1] = (new Task("Walk the dog", false, 2));
+        tasksArray[2] = (new Task("Make my bed", true, 1));
+        tasksArray[3] = (new Task("Unload the dishwasher", false, 0));
+        tasksArray[4] = (new Task("Make dinner", true, 5));
+        return tasksArray;
+    }
 }
