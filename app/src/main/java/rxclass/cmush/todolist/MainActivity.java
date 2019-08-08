@@ -93,6 +93,12 @@ public class MainActivity extends AppCompatActivity {
                         );
                     }
                 })
+                .takeWhile(new Predicate<Task>() {
+                    @Override
+                    public boolean test(Task task) throws Exception {
+                        return task.getPriority() < 9;
+                    }
+                })
                 .subscribe(new Observer<Task>() {
                     @Override
                     public void onSubscribe(Disposable d) {
@@ -101,7 +107,8 @@ public class MainActivity extends AppCompatActivity {
 
                     @Override
                     public void onNext(Task task) {
-                        Log.d(TAG, "range onNext: " + task.getDescription());
+                        Log.d(TAG, "range onNext: task.getDescription():" + task.getDescription());
+                        Log.d(TAG, "range onNext: task.getPriority():" + task.getPriority());
                     }
 
                     @Override
