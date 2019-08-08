@@ -15,6 +15,7 @@ import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Function;
 import io.reactivex.functions.Predicate;
 import io.reactivex.schedulers.Schedulers;
 import rxclass.cmush.todolist.models.Task;
@@ -46,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
         // repeat() is another intuitively named operator.
         // However, repeat must be used in conjunction with another operator.
         // A good example is with the range() operator.
-        Observable.range(0,10)
+        Observable.range(0, 10)
                 .repeat(2)
                 .observeOn(Schedulers.io())
                 .subscribeOn(AndroidSchedulers.mainThread())
@@ -78,18 +79,29 @@ public class MainActivity extends AppCompatActivity {
      * Output: Observable<Integer>
      */
     private void range() {
-        Observable.range(0,20)
+        Observable.range(0, 20)
                 .observeOn(Schedulers.io())
                 .subscribeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<Integer>() {
+                .map(new Function<Integer, Task>() {
+                    @Override
+                    public Task apply(Integer integer) throws Exception {
+                        Log.d(TAG, "range + map apply: " + Thread.currentThread().getName());
+                        return new Task(
+                                "This is a task with priority: " + String.valueOf(integer),
+                                false,
+                                integer
+                        );
+                    }
+                })
+                .subscribe(new Observer<Task>() {
                     @Override
                     public void onSubscribe(Disposable d) {
 
                     }
 
                     @Override
-                    public void onNext(Integer integer) {
-                        Log.d(TAG, "range onNext: " + integer);
+                    public void onNext(Task task) {
+                        Log.d(TAG, "range onNext: " + task.getDescription());
                     }
 
                     @Override
