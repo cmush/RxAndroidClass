@@ -7,6 +7,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import io.reactivex.disposables.CompositeDisposable;
 
+import static rxclass.cmush.todolist.demos.FilterOperators.booleanFilter;
+import static rxclass.cmush.todolist.demos.FilterOperators.stringFilter;
 import static rxclass.cmush.todolist.demos.Introduction.*;
 import static rxclass.cmush.todolist.demos.CreateJustRangeRepeat.*;
 import static rxclass.cmush.todolist.demos.IntervalAndTimer.*;
@@ -48,6 +50,10 @@ public class MainActivity extends AppCompatActivity {
         // Create Operators - fromFuture
         fromFuture(this);
         fromPublisher(this);
+
+        // Filter Operators
+        stringFilter();
+        booleanFilter(); // implemented in Introduction.fromIterable_taskObservable
     }
 
     @Override
