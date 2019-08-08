@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        taskObservable();
+        fromIterable_taskObservable();
         create_singleTaskObservable();
         create_taskListObservable();
         just();
@@ -217,14 +217,14 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void taskObservable() {
+    private void fromIterable_taskObservable() {
         Observable<Task> taskObservable = Observable
                 .fromIterable(DataSource.createTasksList())
                 .subscribeOn(Schedulers.io())
                 .filter(new Predicate<Task>() {
                     @Override
                     public boolean test(Task task) throws Exception {
-                        Log.d(TAG, "taskObservable test:" + Thread.currentThread().getName());
+                        Log.d(TAG, "fromIterable_taskObservable test:" + Thread.currentThread().getName());
                         return task.isComplete();
                     }
                 })
@@ -233,19 +233,19 @@ public class MainActivity extends AppCompatActivity {
         taskObservable.subscribe(new Observer<Task>() {
             @Override
             public void onSubscribe(Disposable d) {
-                Log.d(TAG, "taskObservable onSubscribe: called.");
+                Log.d(TAG, "fromIterable_taskObservable onSubscribe: called.");
                 disposables.add(d);
             }
 
             @Override
             public void onNext(Task task) { // run on main thread
-                Log.d(TAG, "taskObservable onNext: task: " + Thread.currentThread().getName());
-                Log.d(TAG, "taskObservable onNext: task: " + task.getDescription());
+                Log.d(TAG, "fromIterable_taskObservable onNext: task: " + Thread.currentThread().getName());
+                Log.d(TAG, "fromIterable_taskObservable onNext: task: " + task.getDescription());
             }
 
             @Override
             public void onError(Throwable e) {
-                Log.e(TAG, "taskObservable onError: task: " + e);
+                Log.e(TAG, "fromIterable_taskObservable onError: task: " + e);
             }
 
             @Override
