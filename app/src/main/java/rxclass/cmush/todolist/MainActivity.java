@@ -36,11 +36,7 @@ public class MainActivity extends AppCompatActivity {
                 .filter(new Predicate<Task>() {
                     @Override
                     public boolean test(Task task) throws Exception {
-                        try {
-                            Thread.sleep(10000);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
+                        Log.d(TAG, "test:" + Thread.currentThread().getName());
                         return task.isComplete();
                     }
                 })
