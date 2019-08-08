@@ -9,6 +9,7 @@ import android.widget.TextView;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Predicate;
 import io.reactivex.schedulers.Schedulers;
@@ -17,6 +18,7 @@ import rxclass.cmush.todolist.util.DataSource;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
+    private CompositeDisposable disposables = new CompositeDisposable();
 
     //ui
     private TextView text;
@@ -48,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onSubscribe(Disposable d) {
                 Log.d(TAG, "onSubscribe: called.");
+                disposables.add(d);
             }
 
             @Override
@@ -66,5 +69,12 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        disposables.clear(); // remove current observers/observables
+        // disposables.dispose(); // will no longer allow anything to subscribe to the observable
     }
 }
