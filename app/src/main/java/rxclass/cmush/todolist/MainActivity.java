@@ -37,6 +37,36 @@ public class MainActivity extends AppCompatActivity {
         taskObservable();
         singleTaskObservable();
         taskListObservable();
+        just();
+    }
+
+    // not a practical example but makes a great demo
+    private void just() {
+        Observable.just("first", "second", "third", "fourth", "fifth", "sixth",
+                "seventh", "eighth", "ninth", "tenth")
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<String>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        Log.d(TAG, "just onSubscribe: called");
+                    }
+
+                    @Override
+                    public void onNext(String s) {
+                        Log.d(TAG, "just onNext: " + s);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.e(TAG, "just onError: ", e);
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        Log.d(TAG, "just onComplete: done...");
+                    }
+                });
     }
 
     private void taskListObservable() {
