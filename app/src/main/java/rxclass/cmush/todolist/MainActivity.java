@@ -73,6 +73,10 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
+    /*
+     * Input: [x, x+1, ..., x + y]
+     * Output: Observable<Integer>
+     */
     private void range() {
         Observable.range(0,20)
                 .observeOn(Schedulers.io())
@@ -100,7 +104,11 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
-    // not a practical example but makes a great demo
+    /*
+     * Input: T... (Optional Array[10])
+     * Output: Observable<T>
+     * - not a practical example but makes a great demo
+     */
     private void just() {
         Observable.just("first", "second", "third", "fourth", "fifth", "sixth",
                 "seventh", "eighth", "ninth", "tenth")
@@ -129,6 +137,10 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
+    /*
+     * Input:T
+     * Output:Observable<T>
+     */
     private void create_taskListObservable() {
         final List<Task> tasks = DataSource.createTasksList();
 
@@ -177,6 +189,10 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    /*
+     * Input:T
+     * Output:Observable<T>
+     */
     private void create_singleTaskObservable() {
         // Instantiate the object to become an Observable
         final Task task = new Task("Walk the dog", false, 4);
