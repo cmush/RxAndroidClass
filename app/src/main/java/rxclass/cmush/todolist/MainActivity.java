@@ -7,6 +7,8 @@ import android.util.Log;
 import android.widget.TextView;
 
 import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -31,6 +33,47 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         taskObservable();
+        singleTaskObservable();
+    }
+
+    private void singleTaskObservable() {
+        // Instantiate the object to become an Observable
+        final Task task = new Task("Walk the dog", false, 4);
+
+        // Create the Observable
+        Observable<Task> singleTaskObservable = Observable
+                .create(new ObservableOnSubscribe<Task>() {
+                    @Override
+                    public void subscribe(ObservableEmitter<Task> emitter) throws Exception {
+                        if(!emitter.isDisposed()){ // process is unique to the create operator
+                            emitter.onNext(task);  // basically, it should happen if emitter is not
+                            emitter.onComplete();  // disposed of yet.
+                        }
+                    }
+                }).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+
+        singleTaskObservable.subscribe(new Observer<Task>() {
+            @Override
+            public void onSubscribe(Disposable d) {
+
+            }
+
+            @Override
+            public void onNext(Task task) {
+                Log.d(TAG, "singleTaskObservable onNext: : " + task.getDescription());
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onComplete() {
+
+            }
+        });
     }
 
     private void taskObservable() {
@@ -40,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
                 .filter(new Predicate<Task>() {
                     @Override
                     public boolean test(Task task) throws Exception {
-                        Log.d(TAG, "test:" + Thread.currentThread().getName());
+                        Log.d(TAG, "taskObservable test:" + Thread.currentThread().getName());
                         return task.isComplete();
                     }
                 })
@@ -49,19 +92,19 @@ public class MainActivity extends AppCompatActivity {
         taskObservable.subscribe(new Observer<Task>() {
             @Override
             public void onSubscribe(Disposable d) {
-                Log.d(TAG, "onSubscribe: called.");
+                Log.d(TAG, "taskObservable onSubscribe: called.");
                 disposables.add(d);
             }
 
             @Override
             public void onNext(Task task) { // run on main thread
-                Log.d(TAG, "onNext: : " + Thread.currentThread().getName());
-                Log.d(TAG, "onNext: : " + task.getDescription());
+                Log.d(TAG, "taskObservable onNext: : " + Thread.currentThread().getName());
+                Log.d(TAG, "taskObservable onNext: : " + task.getDescription());
             }
 
             @Override
             public void onError(Throwable e) {
-                Log.e(TAG, "onError: : " + e);
+                Log.e(TAG, "taskObservable onError: : " + e);
             }
 
             @Override
