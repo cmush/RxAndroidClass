@@ -11,6 +11,7 @@ import static rxclass.cmush.todolist.demos.Introduction.*;
 import static rxclass.cmush.todolist.demos.CreateJustRangeRepeat.*;
 import static rxclass.cmush.todolist.demos.IntervalAndTimer.*;
 import static rxclass.cmush.todolist.demos.From_ArrayIterableCallable.*;
+import static rxclass.cmush.todolist.demos.CreateOperators.*;
 
 public class MainActivity extends AppCompatActivity {
     //ui
@@ -43,6 +44,9 @@ public class MainActivity extends AppCompatActivity {
         fromArray();
         fromIterable();
         fromCallable();
+
+        // Create Operators - fromFuture
+        fromFuture(this);
     }
 
     @Override
