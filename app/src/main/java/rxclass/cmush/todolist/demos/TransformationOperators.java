@@ -2,6 +2,7 @@ package rxclass.cmush.todolist.demos;
 
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 
 import androidx.appcompat.widget.SearchView;
 
@@ -26,6 +27,8 @@ import rxclass.cmush.todolist.util.DataSource;
 
 public class TransformationOperators {
     private static final String TAG = "TransformationOperators";
+
+    private static long timeSinceLastRequest;
 
     /*
      * transforms each emitted item by applying a function to it.
@@ -154,7 +157,7 @@ public class TransformationOperators {
 
     // uses the RxBinding library (by Jake Wharton) to make click events observable.
     public static void bufferTrackUiInteractions(final CompositeDisposable disposables, View view) {
-        RxView.clicks(view.findViewById(R.id.button))
+        RxView.clicks(view.findViewById(R.id.btnBuffer))
                 .map(new Function<Unit, Integer>() {
                     @Override
                     public Integer apply(Unit unit) throws Exception {
@@ -191,7 +194,6 @@ public class TransformationOperators {
      * rapidly followed by another emitted item.
      * - order is maintained
      */
-    private static long timeSinceLastRequest;
 
     public static void debounceSearchView(final CompositeDisposable disposables, final SearchView searchView) {
         // for log printouts only. Not part of logic.
@@ -260,5 +262,46 @@ public class TransformationOperators {
     // Fake method for sending a request to the server
     private static void sendRequestToServer(String query) {
         // do nothing
+    }
+
+    /*
+     * filters out items emitted by the source
+     * Observable that are within a timespan.
+     * - order is maintained
+     */
+    public static void throttleFirstRestrictButtonSpamming(final CompositeDisposable disposables, final Button btnThrottleFirst) {
+        RxView.clicks(btnThrottleFirst)
+                .throttleFirst(500, TimeUnit.MILLISECONDS)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<Unit>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        disposables.add(d);
+                    }
+
+                    @Override
+                    public void onNext(Unit unit) {
+                        Log.d(TAG,
+                                "throttleFirstRestrictButtonSpamming onNext: time since last clicked: "
+                                        + (System.currentTimeMillis() - timeSinceLastRequest)
+                        );
+                        someMethod(); // Execute some method when a click is registered
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
+    }
+
+    private static void someMethod() {
+        timeSinceLastRequest = System.currentTimeMillis();
+        // do something
     }
 }

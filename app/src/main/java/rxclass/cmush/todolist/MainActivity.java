@@ -20,7 +20,7 @@ import static rxclass.cmush.todolist.demos.TransformationOperators.*;
 public class MainActivity extends AppCompatActivity {
     //ui
     private TextView textView;
-    private Button button;
+    private Button btnBuffer, btnThrottleFirst;
     private SearchView searchView;
 
     //vars
@@ -31,7 +31,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        button = (Button)findViewById(R.id.button);
+        btnBuffer = (Button)findViewById(R.id.btnBuffer);
+        btnThrottleFirst = (Button)findViewById(R.id.btnThrottleFirst);
         searchView = (SearchView)findViewById(R.id.searchView);
 
         // Introduction
@@ -69,8 +70,9 @@ public class MainActivity extends AppCompatActivity {
         mapExtractFieldString();
         mapExtractUpdatedTask();
         bufferGroupEmissions();
-        bufferTrackUiInteractions(disposables, button);
+        bufferTrackUiInteractions(disposables, btnBuffer);
         debounceSearchView(disposables, searchView);
+        throttleFirstRestrictButtonSpamming(disposables, btnThrottleFirst);
     }
 
     @Override
