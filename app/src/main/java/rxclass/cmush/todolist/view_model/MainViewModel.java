@@ -7,6 +7,8 @@ import java.util.concurrent.Future;
 
 import io.reactivex.Observable;
 import okhttp3.ResponseBody;
+import rxclass.cmush.todolist.models.Comment;
+import rxclass.cmush.todolist.models.Post;
 
 public class MainViewModel extends ViewModel {
 
@@ -22,5 +24,13 @@ public class MainViewModel extends ViewModel {
 
     public LiveData<ResponseBody> makeLiveDataQuery(){
         return repository.makeLiveDataQuery();
+    }
+
+    public Observable<Post> makePostsQuery(RecyclerAdapter adapter){
+        return repository.getPostsObservable(adapter);
+    }
+
+    public Observable<Post> makePostWithCommentsQuery(Post post){
+        return repository.getCommentsObservable(post);
     }
 }

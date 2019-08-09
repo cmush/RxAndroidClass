@@ -1,12 +1,19 @@
 package rxclass.cmush.todolist.demos;
 
+import android.content.Context;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
 import androidx.appcompat.widget.SearchView;
+import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.jakewharton.rxbinding3.view.RxView;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -14,16 +21,21 @@ import java.util.concurrent.TimeUnit;
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Function;
+import io.reactivex.functions.Predicate;
 import io.reactivex.schedulers.Schedulers;
 import kotlin.Unit;
 import rxclass.cmush.todolist.R;
+import rxclass.cmush.todolist.models.Post;
 import rxclass.cmush.todolist.models.Task;
 import rxclass.cmush.todolist.util.DataSource;
+import rxclass.cmush.todolist.view_model.MainViewModel;
+import rxclass.cmush.todolist.view_model.RecyclerAdapter;
 
 public class TransformationOperators {
     private static final String TAG = "TransformationOperators";
@@ -303,5 +315,96 @@ public class TransformationOperators {
     private static void someMethod() {
         timeSinceLastRequest = System.currentTimeMillis();
         // do something
+    }
+
+    /*
+     * 2 major functions:
+     * - Create Observables out of objects emitted by other Observables.
+     * - Flattening: Combine multiple Observable sources into a
+     *   single Observable
+     * MediatorLiveData can do something very similar.
+     *
+     * - order is not maintained
+     */
+    public static void flatMapRecViewPostsWithComments(
+            final CompositeDisposable disposables,
+            FragmentActivity context,
+            final RecyclerAdapter adapter
+    ) {
+        final MainViewModel viewModel = ViewModelProviders.of(context).get(MainViewModel.class);
+
+        viewModel
+                .makePostsQuery(adapter)
+                .subscribeOn(Schedulers.io())
+                .flatMap(new Function<Post, ObservableSource<Post>>() {
+                    @Override
+                    public ObservableSource<Post> apply(Post post) throws Exception {
+                        return viewModel.makePostWithCommentsQuery(post);
+                    }
+                })
+                .observeOn(Schedulers.io())
+                .subscribe(new Observer<Post>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        disposables.add(d);
+                    }
+
+                    @Override
+                    public void onNext(Post post) {
+                        updatePost(disposables, adapter);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.e(TAG, "flatMapRecViewPostsWithComments onError: ", e);
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
+    }
+
+    private static void updatePost(
+            final CompositeDisposable disposables,
+            @NotNull final RecyclerAdapter adapter
+    ) {
+        Observable
+                .fromIterable(adapter.getPosts())
+                .filter(new Predicate<Post>() {
+                    @Override
+                    public boolean test(Post post) throws Exception {
+                        return post.getId() == post.getId();
+                    }
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<Post>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        disposables.add(d);
+                    }
+
+                    @Override
+                    public void onNext(Post post) {
+                        Log.d(TAG,
+                                "flatMapRecViewPostsWithComments onNext: updating post: "
+                                        + post.getId()
+                                        + ", thread: "
+                                        + Thread.currentThread().getName()
+                        );
+                        adapter.updatePost(post);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
     }
 }
