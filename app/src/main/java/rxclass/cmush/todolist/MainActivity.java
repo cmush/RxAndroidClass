@@ -5,6 +5,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
 
 import io.reactivex.disposables.CompositeDisposable;
 
@@ -20,6 +21,7 @@ public class MainActivity extends AppCompatActivity {
     //ui
     private TextView textView;
     private Button button;
+    private SearchView searchView;
 
     //vars
     private CompositeDisposable disposables = new CompositeDisposable();
@@ -30,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         button = (Button)findViewById(R.id.button);
+        searchView = (SearchView)findViewById(R.id.searchView);
 
         // Introduction
         fromIterable_taskObservable(disposables);
@@ -67,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
         mapExtractUpdatedTask();
         bufferGroupEmissions();
         bufferTrackUiInteractions(disposables, button);
+        debounceSearchView(disposables, searchView);
     }
 
     @Override
