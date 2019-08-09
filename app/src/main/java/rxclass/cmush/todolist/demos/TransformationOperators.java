@@ -1,15 +1,14 @@
 package rxclass.cmush.todolist.demos;
 
-import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
 
 import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProviders;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.jakewharton.rxbinding3.view.RxView;
 
@@ -29,13 +28,16 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Function;
 import io.reactivex.functions.Predicate;
 import io.reactivex.schedulers.Schedulers;
+import io.reactivex.subjects.PublishSubject;
 import kotlin.Unit;
 import rxclass.cmush.todolist.R;
+import rxclass.cmush.todolist.ViewPostActivity;
 import rxclass.cmush.todolist.models.Post;
 import rxclass.cmush.todolist.models.Task;
 import rxclass.cmush.todolist.util.DataSource;
 import rxclass.cmush.todolist.view_model.MainViewModel;
 import rxclass.cmush.todolist.view_model.RecyclerAdapter;
+import rxclass.cmush.todolist.view_model.ServiceGenerator;
 
 public class TransformationOperators {
     private static final String TAG = "TransformationOperators";
@@ -455,5 +457,120 @@ public class TransformationOperators {
 
                     }
                 });
+    }
+
+    private static final int PERIOD = 100;
+    private static RecyclerAdapter adapter = null;
+
+    public static void switchMapRecViewPostsWithComments(
+            final CompositeDisposable disposables,
+            final PublishSubject<Post> publishSubject,
+            final FragmentActivity context,
+            final RecyclerAdapter adapter,
+            final ProgressBar progressBar
+    ) {
+        TransformationOperators.adapter = adapter;
+
+        publishSubject
+                // apply switchmap operator so only one Observable can be used at a time.
+                // it clears the previous one
+                .switchMap(new Function<Post, ObservableSource<Post>>() {
+                    @Override
+                    public ObservableSource<Post> apply(final Post post) throws Exception {
+                        return Observable
+                                // simulate slow network speed with interval + takeWhile + filter operators
+                                .interval(PERIOD, TimeUnit.MILLISECONDS)
+                                .subscribeOn(AndroidSchedulers.mainThread())
+                                .takeWhile(new Predicate<Long>() {// stop the process if more than 5 seconds passes
+                                    @Override
+                                    public boolean test(Long aLong) throws Exception {
+                                        Log.d(TAG,
+                                                "switchMapRecViewPostsWithComments test: "
+                                                        + Thread.currentThread().getName()
+                                                        + ", " + aLong
+                                        );
+                                        progressBar.setMax(3000 - PERIOD);
+                                        progressBar.setProgress(
+                                                Integer.parseInt(String.valueOf((aLong * PERIOD) + PERIOD))
+                                        );
+                                        return aLong <= (3000 / PERIOD);
+                                    }
+                                })
+                                .filter(new Predicate<Long>() {
+                                    @Override
+                                    public boolean test(Long aLong) throws Exception {
+                                        return aLong >= (3000 / PERIOD);
+                                    }
+                                })
+                                // flatmap to convert Long from the interval operator into a Observable<Post>
+                                .subscribeOn(Schedulers.io())
+                                .flatMap(new Function<Long, ObservableSource<Post>>() {
+                                    @Override
+                                    public ObservableSource<Post> apply(Long aLong) throws Exception {
+                                        return ServiceGenerator.getRequestApi()
+                                                .getPost(post.getId());
+                                    }
+                                });
+                    }
+                })
+                .subscribe(new Observer<Post>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        disposables.add(d);
+                    }
+
+                    @Override
+                    public void onNext(Post post) {
+                        Log.d(TAG, "switchMapRecViewPostsWithComments onNext: done.");
+                        navViewPostActivity(post, context);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
+    }
+
+    public static void retrievePosts(final CompositeDisposable disposables) {
+        ServiceGenerator.getRequestApi()
+                .getPosts()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<List<Post>>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        disposables.add(d);
+                    }
+
+                    @Override
+                    public void onNext(List<Post> posts) {
+                        adapter.setPosts(posts);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.e(TAG, "onError: ", e);
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
+    }
+
+    private static void navViewPostActivity(
+            Post post,
+            FragmentActivity context
+    ) {
+        Intent intent = new Intent(context, ViewPostActivity.class);
+        intent.putExtra("post", post);
+        context.startActivity(intent);
     }
 }

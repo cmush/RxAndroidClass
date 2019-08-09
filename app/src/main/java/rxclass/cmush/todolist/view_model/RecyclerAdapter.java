@@ -20,6 +20,14 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyView
     private static final String TAG = "RecyclerAdapter";
 
     private List<Post> posts = new ArrayList<>();
+    private static OnPostClickListener onPostClickListener;
+
+    public RecyclerAdapter() {
+    }
+
+    public RecyclerAdapter(OnPostClickListener onPostClickListener) {
+        RecyclerAdapter.onPostClickListener = onPostClickListener;
+    }
 
     @NonNull
     @Override
@@ -30,7 +38,6 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyView
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-
         holder.bind(posts.get(position));
     }
 
@@ -53,19 +60,23 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyView
         return posts;
     }
 
-    public class MyViewHolder extends RecyclerView.ViewHolder{
+    public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
+        OnPostClickListener onPostClickListener;
         TextView title, numComments;
         ProgressBar progressBar;
 
-        public MyViewHolder(@NonNull View itemView) {
+        MyViewHolder(@NonNull View itemView) {
             super(itemView);
             title = itemView.findViewById(R.id.title);
             numComments = itemView.findViewById(R.id.num_comments);
-            progressBar = itemView.findViewById(R.id.progress_bar);
+            progressBar = itemView.findViewById(R.id.progressBar);
+
+            this.onPostClickListener = RecyclerAdapter.onPostClickListener;
+            itemView.setOnClickListener(this);
         }
 
-        public void bind(Post post){
+        void bind(Post post){
             title.setText(post.getTitle());
 
             if(post.getComments() == null){
@@ -86,5 +97,14 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyView
                 progressBar.setVisibility(View.GONE);
             }
         }
+
+        @Override
+        public void onClick(View view) {
+            onPostClickListener.onPostClick(getAdapterPosition());
+        }
+    }
+
+    public interface OnPostClickListener{
+        void onPostClick(int position);
     }
 }

@@ -7,7 +7,6 @@ import java.util.concurrent.Future;
 
 import io.reactivex.Observable;
 import okhttp3.ResponseBody;
-import rxclass.cmush.todolist.models.Comment;
 import rxclass.cmush.todolist.models.Post;
 
 public class MainViewModel extends ViewModel {
