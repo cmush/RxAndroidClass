@@ -366,6 +366,55 @@ public class TransformationOperators {
                 });
     }
 
+    /*
+     * 2 major functions:
+     * - Create Observables out of objects emitted by other Observables.
+     * - Flattening: Combine multiple Observable sources into a
+     *   single Observable while maintaining order
+     * MediatorLiveData can do something very similar.
+     *
+     * - order is maintained
+     */
+    public static void concatMapRecViewPostsWithComments(
+            final CompositeDisposable disposables,
+            FragmentActivity context,
+            final RecyclerAdapter adapter
+    ) {
+        final MainViewModel viewModel = ViewModelProviders.of(context).get(MainViewModel.class);
+
+        viewModel
+                .makePostsQuery(adapter)
+                .subscribeOn(Schedulers.io())
+                .concatMap(new Function<Post, ObservableSource<Post>>() {
+                    @Override
+                    public ObservableSource<Post> apply(Post post) throws Exception {
+                        return viewModel.makePostWithCommentsQuery(post);
+                    }
+                })
+                .observeOn(Schedulers.io())
+                .subscribe(new Observer<Post>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        disposables.add(d);
+                    }
+
+                    @Override
+                    public void onNext(Post post) {
+                        updatePost(disposables, adapter);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.e(TAG, "concatMapRecViewPostsWithComments onError: ", e);
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
+    }
+
     private static void updatePost(
             final CompositeDisposable disposables,
             @NotNull final RecyclerAdapter adapter

@@ -83,7 +83,8 @@ public class MainActivity extends AppCompatActivity {
         bufferTrackUiInteractions(disposables, btnBuffer);
         debounceSearchView(disposables, searchView);
         throttleFirstRestrictButtonSpamming(disposables, btnThrottleFirst);
-        flatMapRecViewPostsWithComments(disposables,this, adapter);
+        //flatMapRecViewPostsWithComments(disposables,this, adapter);
+        concatMapRecViewPostsWithComments(disposables,this, adapter);
     }
 
     @Override
