@@ -1,6 +1,7 @@
 package rxclass.cmush.todolist;
 
 import android.os.Bundle;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -17,7 +18,8 @@ import static rxclass.cmush.todolist.demos.TransformationOperators.*;
 
 public class MainActivity extends AppCompatActivity {
     //ui
-    private TextView text;
+    private TextView textView;
+    private Button button;
 
     //vars
     private CompositeDisposable disposables = new CompositeDisposable();
@@ -26,6 +28,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        button = (Button)findViewById(R.id.button);
 
         // Introduction
         fromIterable_taskObservable(disposables);
@@ -61,6 +65,8 @@ public class MainActivity extends AppCompatActivity {
         // Transformation Operators
         mapExtractFieldString();
         mapExtractUpdatedTask();
+        bufferGroupEmissions();
+        bufferTrackUiInteractions(disposables, button);
     }
 
     @Override
