@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">ToDoListRx</string>
+    <string name="buffer">Buffer</string>
+    <string name="throttle_first">Throttle First</string>
 </resources>
